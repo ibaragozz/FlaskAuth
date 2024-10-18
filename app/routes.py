@@ -3,12 +3,13 @@ from flask_login import login_user, current_user, logout_user, login_required
 from app.models import User
 from app import app, db, bcrypt
 from app.forms import RegistrationForm, LoginForm
-
+from app.forms import EditProfileForm
 
 @app.route('/')
+
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    return render_template('home.html', title=f'Home - {current_user.username}' if current_user.is_authenticated else 'Home')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -52,3 +53,12 @@ def logout():
 @login_required
 def account():
     return render_template('account.html', title='Account')
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+
+        flash('Your profile has been updated!', 'success')
+        return redirect(url_for('account'))
+    return render_template('edit_profile.html', form=form)
